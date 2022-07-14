@@ -16,7 +16,7 @@ app.use(express.static("build"));
 const mongoose = require("mongoose");
 const url = process.env.MONGO_DB_URI;
 
-console.log("Connecting to Database");
+console.log("Connecting to Database!");
 mongoose
   .connect(url)
   .then((result) => {
