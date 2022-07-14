@@ -3,7 +3,7 @@ const morgan = require("morgan");
 const express = require("express");
 const cors = require("cors");
 const app = express();
-// const Person = require("./models/person");
+const Person = require("./models/person");
 
 require("dotenv").config();
 
@@ -11,34 +11,6 @@ app.use(morgan("tiny"));
 app.use(express.json());
 app.use(cors());
 app.use(express.static("build"));
-
-// Mongoose
-const mongoose = require("mongoose");
-const url = process.env.MONGODB_URI;
-
-console.log("Connecting to Database!");
-mongoose
-  .connect(url)
-  .then((result) => {
-    console.log("Connected to MongoDB!");
-  })
-  .catch((error) => {
-    console.log("Error connecting to MongoDB:", error.message);
-  });
-
-const personSchema = new mongoose.Schema({
-  name: String,
-  number: String,
-  id: String,
-});
-
-personSchema.set("toJSON", {
-  transform: (document, returnedObject) => {
-    returnedObject.id = returnedObject._id.toString();
-    delete returnedObject._id;
-    delete returnedObject.__v;
-  },
-});
 
 const Person = mongoose.model("Person", personSchema);
 
@@ -85,12 +57,6 @@ const duplicatePerson = (person) => {
   );
 };
 
-// Express Database
-// app.get("/api/persons", (request, response) => {
-//   response.json(persons);
-// });
-
-// Mongo DB
 app.get("/api/persons", (request, response) => {
   Person.find({}).then((persons) => {
     response.json(persons);
@@ -125,16 +91,18 @@ app.post("/api/persons", (request, response) => {
       error: "Name or Number is missing",
     });
   }
-  const person = {
-    id: generateId(),
+  const person = new Person({
     name: body.name,
     number: body.number,
-  };
+  });
   if (duplicatePerson(person)) {
     return response.status(400).json({
       error: "Name must be unique",
     });
   }
+  person.save().then((newPerson) => {
+    response.json(newPerson);
+  });
   persons = persons.concat(person);
   response.json(person);
 });
