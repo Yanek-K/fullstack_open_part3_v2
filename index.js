@@ -12,26 +12,6 @@ app.use(express.json());
 app.use(cors());
 app.use(express.static("build"));
 
-morgan.token("person", (request, response) => {
-  return JSON.stringify(request.body);
-});
-
-app.use(
-  morgan(
-    ":method :url :status :res[content-lenght] - :response-time ms :person"
-  )
-);
-
-const generateId = () => {
-  return Math.floor(Math.random() * 10000);
-};
-
-const duplicatePerson = (person) => {
-  return persons.find(
-    (p) => p.name.toLowerCase() === person.name.toLowerCase()
-  );
-};
-
 let persons = [
   {
     id: 1,
@@ -55,10 +35,28 @@ let persons = [
   },
 ];
 
+morgan.token("person", (request, response) => {
+  return JSON.stringify(request.body);
+});
+
+app.use(
+  morgan(
+    ":method :url :status :res[content-lenght] - :response-time ms :person"
+  )
+);
+
+const generateId = () => {
+  return Math.floor(Math.random() * 10000);
+};
+
+const duplicatePerson = (person) => {
+  return persons.find(
+    (p) => p.name.toLowerCase() === person.name.toLowerCase()
+  );
+};
+
 app.get("/api/persons", (request, response) => {
-  Person.find({}).then((persons) => {
-    response.json(persons);
-  });
+  response.json(persons);
 });
 
 app.get("/info", (request, response) => {
