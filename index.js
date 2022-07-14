@@ -101,8 +101,8 @@ app.post("/api/persons", (request, response) => {
   person.save().then((newPerson) => {
     response.json(newPerson);
   });
-  persons = persons.concat(person);
-  response.json(person);
+  // persons = persons.concat(person);
+  // response.json(person);
 });
 
 app.delete("/api/persons/:id", (request, response) => {
