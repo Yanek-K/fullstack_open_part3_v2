@@ -12,8 +12,6 @@ app.use(express.json());
 app.use(cors());
 app.use(express.static("build"));
 
-const Person = mongoose.model("Person", personSchema);
-
 let persons = [
   {
     id: 1,
