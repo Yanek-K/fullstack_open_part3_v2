@@ -3,6 +3,7 @@ const morgan = require("morgan");
 const express = require("express");
 const cors = require("cors");
 const app = express();
+const Person = require("./models/person");
 
 require("dotenv").config();
 
@@ -20,6 +21,16 @@ app.use(
     ":method :url :status :res[content-lenght] - :response-time ms :person"
   )
 );
+
+const generateId = () => {
+  return Math.floor(Math.random() * 10000);
+};
+
+const duplicatePerson = (person) => {
+  return persons.find(
+    (p) => p.name.toLowerCase() === person.name.toLowerCase()
+  );
+};
 
 let persons = [
   {
@@ -44,18 +55,10 @@ let persons = [
   },
 ];
 
-const generateId = () => {
-  return Math.floor(Math.random() * 10000);
-};
-
-const duplicatePerson = (person) => {
-  return persons.find(
-    (p) => p.name.toLowerCase() === person.name.toLowerCase()
-  );
-};
-
 app.get("/api/persons", (request, response) => {
-  response.json(persons);
+  Person.find({}).then((persons) => {
+    response.json(persons);
+  });
 });
 
 app.get("/info", (request, response) => {
