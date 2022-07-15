@@ -60,20 +60,26 @@ const duplicatePerson = (person) => {
   );
 };
 
-app.get("/api/persons", (request, response) => {
-  Person.find({}).then((persons) => {
-    response.json(persons);
-  });
+app.get("/api/persons", (request, response, next) => {
+  Person.find({})
+    .then((persons) => {
+      response.json(persons);
+    })
+    .catch((error) => next(error));
 });
 
-app.get("/info", (request, response) => {
-  const personsLength = persons.length;
-  const personsMsg = `Phonebook has info for ${personsLength} people`;
-  const date = new Date();
-  const formattedDate = moment(date).format("LLLL");
-  const dateMsg = `${formattedDate} UTC/GMT -0400 hours (Eastern Daylight Time)`;
-  const finalMsg = `<p>${personsMsg}</p> <p>${dateMsg}</p>`;
-  response.send(finalMsg);
+app.get("/info", (request, response, next) => {
+  Person.find({})
+    .then((persons) => {
+      const length = persons.length;
+      const personsMsg = `Phonebook has info for ${length} people`;
+      const date = new Date();
+      const formattedDate = moment(date).format("LLLL");
+      const dateMsg = `${formattedDate} UTC/GMT -0400 hours (Eastern Daylight Time)`;
+      const finalMsg = `<p>${personsMsg}</p> <p> ${dateMsg}</p>`;
+      response.send(finalMsg);
+    })
+    .catch((error) => next(error));
 });
 
 app.get("/api/persons/:id", (request, response, next) => {
@@ -90,7 +96,7 @@ app.get("/api/persons/:id", (request, response, next) => {
     });
 });
 
-app.post("/api/persons", (request, response) => {
+app.post("/api/persons", (request, response, next) => {
   const body = request.body;
   if (!body.name || !body.number) {
     return response.status(400).json({
@@ -106,9 +112,12 @@ app.post("/api/persons", (request, response) => {
       error: "Name must be unique",
     });
   }
-  person.save().then((newPerson) => {
-    response.json(newPerson);
-  });
+  person
+    .save()
+    .then((newPerson) => {
+      response.json(newPerson);
+    })
+    .catch((error) => next(error));
 });
 
 app.delete("/api/persons/:id", (request, response, next) => {
